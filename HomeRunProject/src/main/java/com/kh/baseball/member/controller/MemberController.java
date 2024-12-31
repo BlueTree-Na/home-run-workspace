@@ -30,8 +30,8 @@ public class MemberController {
 		
 		Member loginMember = memberService.login(member);
 		
-		log.info("{}" , member);
-		log.info("{}" , loginMember);
+		//log.info("{}" , member);
+		//log.info("{}" , loginMember);
 		
 		//return null;
 		session.setAttribute("loginUser", loginMember);
@@ -56,7 +56,7 @@ public class MemberController {
 	@PostMapping("sign_up.me")
 	public ModelAndView signUp(Member member, HttpSession session) {
 		memberService.join(member);
-		session.setAttribute("alert", "회원가입 완료");
+		session.setAttribute("alertMsg", "회원가입 완료");
 		return mv.setViewNameAndData("redirect:/", null);
 	}
 	
@@ -83,6 +83,35 @@ public class MemberController {
 		Map<String, Object> successId = memberService.searchId(member);
 		
 		return mv.setViewNameAndData("member/searchIdSuccess", successId);
+	}
+	
+	
+	@GetMapping("mypage.me")
+	public String mypage() {
+		
+		return "member/my_page";
+	}
+	
+	@PostMapping("update.me")
+	public ModelAndView updateMember(Member member, HttpSession session) {
+		
+		log.info("{}", member);
+		
+		// session.setAttribute("loginUser", memberService.login(member));
+		memberService.updateMember(member,session);
+		session.setAttribute("alertMsg", "정보 수정 완료");
+		return mv.setViewNameAndData("redirect:mypage.me", null);
+		
+	}
+	
+	@PostMapping("delete.me")
+	public ModelAndView delete(String userPwd, HttpSession session ) {
+		memberService.deleteMember(userPwd, session);
+		
+		session.removeAttribute("loginUser");
+		session.setAttribute("alertMsg", "탈퇴 완료");
+		
+		return mv.setViewNameAndData("redirect:/", null);
 	}
 
 }
